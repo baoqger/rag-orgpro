@@ -83,6 +83,36 @@ def ask(question, query_engine):
     streaming_response = query_engine.query(question)
     streaming_response.print_response_stream()
 
+def ask_with_debug(question, query_engine):
+    # 更新提示模板
+    update_prompt_template(query_engine=query_engine)
+
+    # 输出问题
+    print('=' * 50)  # 使用乘法生成分割线
+    print(f'🤔 问题：{question}')
+    print('=' * 50 + '\n')  # 使用乘法生成分割线
+
+    # 获取回答
+    response = query_engine.query(question)
+
+    # 输出回答
+    print('🤖 回答：')
+    if hasattr(response, 'print_response_stream') and callable(response.print_response_stream):
+        response.print_response_stream()
+    else:
+        print(str(response))
+
+    # 输出参考文档
+    print('\n' + '-' * 50)  # 使用乘法生成分割线
+    print('📚 参考文档：\n')
+    for i, source_node in enumerate(response.source_nodes, start=1):
+        print(f'文档 {i}:')
+        print(source_node)
+        print()
+
+    print('-' * 50)  # 使用乘法生成分割线
+
+    return response
 
 
 from llama_index.core import PromptTemplate
